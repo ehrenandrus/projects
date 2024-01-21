@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>snake.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #808080;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+snake.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">turtle </span><span class="s0">import </span><span class="s1">Turtle</span>
+<span class="s1">MOVE_DISTANCE = </span><span class="s2">20</span>
+<span class="s1">UP = </span><span class="s2">90</span>
+<span class="s1">DOWN = </span><span class="s2">270</span>
+<span class="s1">LEFT = </span><span class="s2">180</span>
+<span class="s1">RIGHT = </span><span class="s2">0</span>
+
+<span class="s0">class </span><span class="s1">Snake:</span>
+    <span class="s3">#turtles are 20*20</span>
+
+    <span class="s0">def </span><span class="s1">__init__(self):</span>
+        <span class="s1">self.num_turtles = </span><span class="s2">30</span>
+        <span class="s1">self.segments = []</span>
+        <span class="s1">self.create_snake()</span>
+        <span class="s1">self.head = self.segments[</span><span class="s2">0</span><span class="s1">]</span>
+
+    <span class="s0">def </span><span class="s1">create_snake(self):</span>
+        <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(self.num_turtles):</span>
+            <span class="s1">x_coord = -</span><span class="s2">20 </span><span class="s1">* i</span>
+            <span class="s1">new_segment = Turtle(</span><span class="s4">&quot;square&quot;</span><span class="s1">)</span>
+            <span class="s1">new_segment.color(</span><span class="s4">&quot;white&quot;</span><span class="s1">)</span>
+            <span class="s1">new_segment.penup()</span>
+            <span class="s1">new_segment.goto(x_coord</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span>
+            <span class="s1">self.segments.append((new_segment))</span>
+
+    <span class="s0">def </span><span class="s1">add_segment(self</span><span class="s0">, </span><span class="s1">position):</span>
+        <span class="s1">new_segment = Turtle(</span><span class="s4">&quot;square&quot;</span><span class="s1">)</span>
+        <span class="s1">new_segment.color(</span><span class="s4">&quot;white&quot;</span><span class="s1">)</span>
+        <span class="s1">new_segment.penup()</span>
+        <span class="s1">new_segment.goto(position)</span>
+        <span class="s1">self.segments.append(new_segment)</span>
+
+    <span class="s0">def </span><span class="s1">extend(self):</span>
+        <span class="s1">self.add_segment(self.segments[-</span><span class="s2">1</span><span class="s1">].pos())</span>
+
+    <span class="s0">def </span><span class="s1">move_forward(self):</span>
+        <span class="s1">start = len(self.segments) - </span><span class="s2">1</span>
+        <span class="s1">stop = </span><span class="s2">0</span>
+        <span class="s1">step = -</span><span class="s2">1</span>
+        <span class="s0">for </span><span class="s1">index </span><span class="s0">in </span><span class="s1">range(start</span><span class="s0">, </span><span class="s1">stop</span><span class="s0">, </span><span class="s1">step):  </span><span class="s3"># 2,1,0</span>
+            <span class="s1">self.segments[index].goto(self.segments[index - </span><span class="s2">1</span><span class="s1">].pos())</span>
+        <span class="s1">self.segments[</span><span class="s2">0</span><span class="s1">].forward(MOVE_DISTANCE)</span>
+
+    <span class="s0">def </span><span class="s1">left(self):</span>
+        <span class="s0">if </span><span class="s1">self.head.heading() != RIGHT:</span>
+            <span class="s1">self.head.setheading(LEFT)</span>
+
+    <span class="s0">def </span><span class="s1">right(self):</span>
+        <span class="s0">if </span><span class="s1">self.head.heading() != LEFT:</span>
+            <span class="s1">self.head.setheading(RIGHT)</span>
+
+    <span class="s0">def </span><span class="s1">down(self):</span>
+        <span class="s0">if </span><span class="s1">self.head.heading() != UP:</span>
+            <span class="s1">self.head.setheading(DOWN)</span>
+
+    <span class="s0">def </span><span class="s1">up(self):</span>
+        <span class="s0">if </span><span class="s1">self.head.heading() != DOWN:</span>
+            <span class="s1">self.head.setheading(UP)</span>
+</pre>
+</body>
+</html>

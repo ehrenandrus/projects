@@ -1,1 +1,4 @@
 Classic Snake Game written in python
+use the arrow keys to change the snakes direction.
+try to capture the blue "food" to increase your score which will also increase the length of the snake.
+if you run into your tail or the wall it's GAME OVER MAN!

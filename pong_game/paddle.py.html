@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>paddle.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+paddle.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">turtle </span><span class="s0">import </span><span class="s1">Turtle</span>
+
+
+<span class="s0">class </span><span class="s1">Paddle(Turtle):</span>
+
+    <span class="s0">def </span><span class="s1">__init__(self</span><span class="s0">, </span><span class="s1">start_position):</span>
+        <span class="s1">super().__init__()</span>
+        <span class="s1">self.shape(</span><span class="s2">&quot;square&quot;</span><span class="s1">)</span>
+        <span class="s1">self.penup()</span>
+        <span class="s1">self.turtlesize(stretch_wid=</span><span class="s3">1</span><span class="s0">, </span><span class="s1">stretch_len=</span><span class="s3">5</span><span class="s1">)</span>
+        <span class="s1">self.goto(start_position)</span>
+        <span class="s1">self.color(</span><span class="s2">&quot;white&quot;</span><span class="s1">)</span>
+        <span class="s1">self.setheading(</span><span class="s3">90</span><span class="s1">)</span>
+        <span class="s1">self.move_amount = </span><span class="s3">20</span>
+
+    <span class="s0">def </span><span class="s1">move_up(self):</span>
+        <span class="s1">self.forward(self.move_amount)</span>
+
+    <span class="s0">def </span><span class="s1">move_down(self):</span>
+        <span class="s1">self.backward(self.move_amount)</span>
+
+</pre>
+</body>
+</html>

